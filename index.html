@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geri Dönüşüm Oyunu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        #score-board {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: inline-block;
+        }
+
+        #score {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #message {
+            font-size: 32px;
+            height: 50px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        #waste-area {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            margin: 20px auto;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #waste {
+            width: 150px;
+            height: 150px;
+            cursor: grab;
+            transition: transform 0.2s;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            object-fit: contain;
+        }
+
+        #waste:hover {
+            transform: scale(1.15);
+        }
+
+        #waste:active {
+            cursor: grabbing;
+        }
+
+        #bins {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .bin {
+            background: white;
+            padding: 20px;
+            border: 4px dashed #333;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            min-height: 150px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .bin:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+        }
+
+        .bin.drag-over {
+            background: #f0f0f0;
+            border-style: solid;
+            transform: scale(1.05);
+        }
+
+        .bin[data-type="kagit"] {
+            border-color: #d4a574;
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%);
+        }
+
+        .bin[data-type="cam"] {
+            border-color: #2d8659;
+            background: linear-gradient(135deg, #a8d5ba 0%, #7cb89d 100%);
+        }
+
+        .bin[data-type="plastik"] {
+            border-color: #4a7ba7;
+            background: linear-gradient(135deg, #a8c5e3 0%, #7ba3cc 100%);
+        }
+
+        .bin[data-type="metal"] {
+            border-color: #6b6b6b;
+            background: linear-gradient(135deg, #d1d1d1 0%, #b0b0b0 100%);
+        }
+
+        .bin-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .waste-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>♻️ Geri Dönüşüm Oyunu</h1>
+        
+        <div id="score-board">
+            <div id="score">Puan: 0</div>
+        </div>
+
+        <div id="message"></div>
+
+        <div id="waste-area">
+            <img id="waste" draggable="true" alt="Atık">
+        </div>
+
+        <div id="bins">
+            <div class="bin" data-type="kagit">
+                <img src="geridon\kagit_1.jpg" alt="Kağıt Kutusu" style="width: 80px; height: 80px; margin-bottom: 10px;">
+                <div>KAĞIT</div>
+            </div>
+            <div class="bin" data-type="cam">
+                <img src="geridon\cam_1.jpg" alt="Cam Kutusu" style="width: 80px; height: 80px; margin-bottom: 10px;">
+                <div>CAM</div>
+            </div>
+            <div class="bin" data-type="plastik">
+                <img src="geridon\plastik_1.jpg" alt="Plastik Kutusu" style="width: 80px; height: 80px; margin-bottom: 10px;">
+                <div>PLASTİK</div>
+            </div>
+            <div class="bin" data-type="metal">
+                <img src="geridon\metal_1.jpg" alt="Metal Kutusu" style="width: 80px; height: 80px; margin-bottom: 10px;">
+                <div>METAL</div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <strong>Nasıl Oynanır?</strong><br>
+            Atığı sürükleyip doğru geri dönüşüm kutusuna bırakın!<br>
+            Doğru kutu: +10 puan | Yanlış kutu: -10 puan
+        </div>
+    </div>
+
+    <script>
+        const wastes = [
+            // KAĞIT ÜRÜNLERİ
+            { src: "kagıtfoto/ka1.jpg", type: "kagit", name: "Kağıt 1" },
+            { src: "kagıtfoto/ka2.jpg", type: "kagit", name: "Kağıt 2" },
+            { src: "kagıtfoto/ka3.jpg", type: "kagit", name: "Kağıt 3" },
+            { src: "kagıtfoto/ka4.jpg", type: "kagit", name: "Kağıt 4" },
+            
+            // CAM ÜRÜNLER
+            { src: "camfoto/cam1.jpg", type: "cam", name: "Cam 1" },
+            { src: "camfoto/cam2.jpg", type: "cam", name: "Cam 2" },
+            { src: "camfoto/cam3.jpg", type: "cam", name: "Cam 3" },
+
+            // PLASTİK ÜRÜNLER
+            { src: "plastfoto/pla1.jpg", type: "plastik", name: "Plastik 1" },
+            { src: "plastfoto/pla2.jpg", type: "plastik", name: "Plastik 2" },
+            { src: "plastfoto/pla3.jpg", type: "plastik", name: "Plastik 3" },
+            { src: "plastfoto/pla4.jpg", type: "plastik", name: "Plastik 4" },
+            
+            // METAL ÜRÜNLER
+            { src: "metalfoto/metal1.jpg", type: "metal", name: "Metal 1" },
+            { src: "metalfoto/metal2.jpg", type: "metal", name: "Metal 2" },
+            { src: "metalfoto/metal3.jpg", type: "metal", name: "Metal 3" },
+            { src: "metalfoto/metal4.jpg", type: "metal", name: "Metal 4" }
+            
+        ];
+
+        let score = 0;
+        let currentWaste = null;
+
+        const wasteImg = document.getElementById("waste");
+        const scoreDiv = document.getElementById("score");
+        const messageDiv = document.getElementById("message");
+        const bins = document.querySelectorAll(".bin");
+
+        function loadWaste() {
+            const randomIndex = Math.floor(Math.random() * wastes.length);
+            currentWaste = wastes[randomIndex];
+            wasteImg.src = currentWaste.src;
+            wasteImg.alt = currentWaste.name;
+        }
+
+        wasteImg.addEventListener("dragstart", function(e) {
+            e.dataTransfer.setData("type", currentWaste.type);
+            wasteImg.style.opacity = "0.5";
+        });
+
+        wasteImg.addEventListener("dragend", function() {
+            wasteImg.style.opacity = "1";
+        });
+
+        bins.forEach(bin => {
+            bin.addEventListener("dragover", function(e) {
+                e.preventDefault();
+                bin.classList.add("drag-over");
+            });
+
+            bin.addEventListener("dragleave", function() {
+                bin.classList.remove("drag-over");
+            });
+
+            bin.addEventListener("drop", function(e) {
+                e.preventDefault();
+                bin.classList.remove("drag-over");
+                
+                const wasteType = e.dataTransfer.getData("type");
+                const binType = bin.getAttribute("data-type");
+
+                if (wasteType === binType) {
+                    score += 10;
+                    messageDiv.textContent = "DOĞRU ✅";
+                    messageDiv.style.color = "#22c55e";
+                    bin.classList.add("pulse");
+                    setTimeout(() => bin.classList.remove("pulse"), 500);
+                } else {
+                    score -= 10;
+                    messageDiv.textContent = "YANLIŞ ❌";
+                    messageDiv.style.color = "#ef4444";
+                    bin.classList.add("shake");
+                    setTimeout(() => bin.classList.remove("shake"), 500);
+                }
+
+                scoreDiv.textContent = "Puan: " + score;
+
+                setTimeout(() => {
+                    messageDiv.textContent = "";
+                }, 1500);
+
+                setTimeout(loadWaste, 300);
+            });
+        });
+
+        let touchedElement = null;
+
+        wasteImg.addEventListener("touchstart", function(e) {
+            e.preventDefault();
+            touchedElement = wasteImg;
+            wasteImg.style.opacity = "0.5";
+        });
+
+        document.addEventListener("touchmove", function(e) {
+            if (!touchedElement) return;
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            bins.forEach(b => b.classList.remove("drag-over"));
+            if (elementAtPoint && elementAtPoint.classList.contains("bin")) {
+                elementAtPoint.classList.add("drag-over");
+            }
+        });
+
+        document.addEventListener("touchend", function(e) {
+            if (!touchedElement) return;
+            
+            wasteImg.style.opacity = "1";
+            const touch = e.changedTouches[0];
+            const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (elementAtPoint && elementAtPoint.classList.contains("bin")) {
+                const bin = elementAtPoint;
+                bin.classList.remove("drag-over");
+                
+                const wasteType = currentWaste.type;
+                const binType = bin.getAttribute("data-type");
+
+                if (wasteType === binType) {
+                    score += 10;
+                    messageDiv.textContent = "DOĞRU ✅";
+                    messageDiv.style.color = "#22c55e";
+                    bin.classList.add("pulse");
+                    setTimeout(() => bin.classList.remove("pulse"), 500);
+                } else {
+                    score -= 10;
+                    messageDiv.textContent = "YANLIŞ ❌";
+                    messageDiv.style.color = "#ef4444";
+                    bin.classList.add("shake");
+                    setTimeout(() => bin.classList.remove("shake"), 500);
+                }
+
+                scoreDiv.textContent = "Puan: " + score;
+
+                setTimeout(() => {
+                    messageDiv.textContent = "";
+                }, 1500);
+
+                setTimeout(loadWaste, 300);
+            }
+            
+            touchedElement = null;
+            bins.forEach(b => b.classList.remove("drag-over"));
+        });
+
+        loadWaste();
+    </script>
+</body>
+</html>
