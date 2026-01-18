@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geri Dönüşüm Oyunu</title>
     <style>
+        /* CSS başlıyor */
+        /* Görsel tasarım ve animasyonlar */ 
         * {
             margin: 0;
             padding: 0;
@@ -19,6 +21,7 @@
             padding: 20px;
         }
 
+        /* Oyunun ana çerçevesi */
         .game-container {
             max-width: 800px;
             margin: 0 auto;
@@ -31,6 +34,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
+        /* Puan tablosu tasarımı */
         #score-board {
             background: white;
             padding: 15px 30px;
@@ -57,6 +61,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
+        /* Atık nesnesinin (çöp) görüneceği alan */
         #waste-area {
             background: rgba(255, 255, 255, 0.9);
             padding: 30px;
@@ -69,6 +74,7 @@
             justify-content: center;
         }
 
+        /* Sürüklenecek atık görseli */
         #waste {
             width: 150px;
             height: 150px;
@@ -86,6 +92,7 @@
             cursor: grabbing;
         }
 
+        /* Kutuların (bins) yerleşimi */
         #bins {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -93,6 +100,7 @@
             margin-top: 30px;
         }
 
+        /* Her bir kutunun genel stili */
         .bin {
             background: white;
             padding: 20px;
@@ -114,6 +122,7 @@
             box-shadow: 0 8px 12px rgba(0,0,0,0.2);
         }
 
+        /* Sürükleme kutunun üzerine geldiğinde efekt versin */
         .bin.drag-over {
             background: #f0f0f0;
             border-style: solid;
@@ -145,6 +154,7 @@
             margin-bottom: 10px;
         }
 
+        /* Yanlış cevapta kutuyu salla */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
@@ -155,6 +165,7 @@
             animation: shake 0.5s;
         }
 
+        /* Doğru cevapta kutuyu büyüt-küçült */
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
@@ -181,6 +192,7 @@
     </style>
 </head>
 <body>
+    
     <div class="game-container">
         <h1>♻️ Geri Dönüşüm Oyunu</h1>
         
